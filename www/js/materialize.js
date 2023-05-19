@@ -71,7 +71,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       return this;
     }
 
-    // If already a cash collection, don't do any further processing
     if (selector.cash && selector !== win) {
       return selector;
     }
@@ -82,14 +81,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     if (isString(selector)) {
       elems = idMatch.test(selector) ?
-      // If an ID use the faster getElementById check
       doc.getElementById(selector.slice(1)) : htmlMatch.test(selector) ?
-      // If HTML, parse it into real elements
       parseHTML(selector) :
-      // else use `find`
       find(selector, context);
 
-      // If function, use as shortcut for DOM ready
     } else if (isFunction(selector)) {
       onReady(selector);return this;
     }
@@ -98,12 +93,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       return this;
     }
 
-    // If a single DOM element is passed in or received via ID, return the single element
     if (elems.nodeType || elems === win) {
       this[0] = elems;
       this.length = 1;
     } else {
-      // Treat like an array and loop through each item.
       length = this.length = elems.length;
       for (; i < length; i++) {
         this[i] = elems[i];
@@ -117,7 +110,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return new Init(selector, context);
   }
 
-  var fn = cash.fn = cash.prototype = Init.prototype = { // jshint ignore:line
+  var fn = cash.fn = cash.prototype = Init.prototype = {
     cash: true,
     length: 0,
     push: push,
@@ -177,13 +170,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   function getCompareFunction(selector) {
     return (
-      /* Use browser's `matches` function if string */
       isString(selector) ? matches :
-      /* Match a cash element */
       selector.cash ? function (el) {
         return selector.is(el);
       } :
-      /* Direct comparison */
       function (el, selector) {
         return el === selector;
       }

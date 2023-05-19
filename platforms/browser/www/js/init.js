@@ -38,7 +38,7 @@
           }).done(function (groupData) {
             // Aquí puedes acceder a los detalles del grupo en el objeto 'groupData'
             var groupDetails = groupData; // Por ejemplo, asignamos todos los detalles a una variable
-
+            console.log(groupDetails);
             // Cargar y mostrar los detalles del grupo en la pestaña 2
             var tabContent2 = $('#test-swipe-2');
             tabContent2.empty(); // Limpiar el contenido existente en la pestaña 2
@@ -47,7 +47,7 @@
             var groupContainer = $('<div>').addClass('group-details');
             var groupName = $('<h2>').addClass('class-name').text(groupDetails.name);
             var groupType = $('<p>').addClass('class-type').text('Tipo: ' + groupDetails.type);
-            var groupCountry = $('<p>').addClass('class-country').text('País: ' + groupDetails.country);
+            var groupCountry = $('<p>').addClass('class-country').text('País: ' + groupDetails.country + ' - ' + groupDetails.area.name);
 
             if (groupDetails.type == "Person") {
             var gender = $('<p>').addClass('class-gender').text('Género: ' + groupDetails.gender);
@@ -55,9 +55,38 @@
 
             // Agregar los elementos al contenedor principal
             groupContainer.append(groupName, groupType, groupCountry, gender);
-            tabContent2.append(groupContainer);
 
-            $('.tabs').tabs('select', 'test-swipe-2'); // Cambiar a la pestaña 2
+            var albumUrl = "https://musicbrainz.org/ws/2/release-group?artist=" + groupId + "&type=album";
+
+            $.ajax({
+              method: "GET",
+              url: albumUrl,
+              dataType: "json"
+            }).done(function(albumData) {
+              var albums = albumData['release-groups'];
+
+              // Crear un contenedor para los álbumes
+              var albumsContainer = $('<div>').addClass('albums-container');
+              albumsContainer.empty();
+              var tituloAlbumsContainer = albumsContainer.append($('<h2>Listado de álbumes</h2>'));
+              // Crear una lista para los álbumes
+              var albumsList = $('<ul>').addClass('albums-list');
+              // Recorrer la lista de álbumes y crear elementos de lista correspondientes
+              for (var i = 0; i < albums.length; i++) {
+                var album = albums[i];
+                var albumTitle = album.title;
+                var albumListItem = $('<li>').text(albumTitle);
+                albumsList.append(albumListItem);
+              }
+
+              // Agregar la lista de álbumes al contenedor
+              albumsContainer.append(albumsList);
+              tabContent2.empty().append(groupContainer, albumsContainer);
+
+              $('.tabs').tabs('select', 'test-swipe-2'); // Cambiar a la pestaña 2
+            }).fail(function() {
+              alert("Error al obtener los álbumes del artista");
+            });
           }).fail(function () {
             alert("AJAX request failed! ERROR");
           });
